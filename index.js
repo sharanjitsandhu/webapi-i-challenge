@@ -7,7 +7,7 @@ const db = require("./data/db.js");
 
 const server = express();
 
-//add this for POST request
+//middleware / add this for POST request
 server.use(express.json());
 
 server.get("/", (req, res) => {
@@ -16,7 +16,6 @@ server.get("/", (req, res) => {
 });
 
 //GET /users => return a list of users in JSON format
-
 server.get("/api/users", (req, res) => {
   db.find()
     .then(users => {
@@ -34,9 +33,8 @@ server.get("/api/users", (req, res) => {
     });
 });
 
-server.post("/api/users", (req, res) => {
+/*server.post("/api/users", (req, res) => {
   //one way to ge data from the client is in the request's body
-  //axios.post(url, data) =. the dat ashows up as the bosy on the server
   const userInfo = req.body;
   console.log("request body: ", userInfo);
 
@@ -51,6 +49,33 @@ server.post("/api/users", (req, res) => {
         message: "There was an error while saving the user to the database."
       });
     });
+});
+*/
+
+server.post("/api/users", (req, res) => {
+  //one way to get data from the client is in the request's body
+  //axios.post(url, data) => the data shows up as the body on the server
+  const userInfo = req.body;
+
+  if (userInfo.name && userInfo.bio) {
+    db.insert(userInfo)
+      .then(userId => {
+        db.findById(userId.id).then(user => {
+          res.status(201).json(user);
+        });
+      })
+      .catch(err => {
+        //handle error
+        res.status(500).json({
+          error: err,
+          message: "There was an error while saving the user to the database."
+        });
+      });
+  } else {
+    res
+      .status(400)
+      .json({ message: "Please provide name and bio for the user." });
+  }
 });
 
 server.delete("/api/users/:id", (req, res) => {
