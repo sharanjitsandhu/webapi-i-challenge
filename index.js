@@ -17,7 +17,7 @@ server.get("/", (req, res) => {
 
 //GET /users => return a list of users in JSON format
 
-server.get("/users", (req, res) => {
+server.get("/api/users", (req, res) => {
   db.find()
     .then(users => {
       // this method will do two things:
@@ -27,11 +27,14 @@ server.get("/users", (req, res) => {
     })
     .catch(err => {
       //handle error
-      res.json({ error: err, message: "Something broke!" });
+      res.status(500).json({
+        error: err,
+        message: "The users information could not be retrieved."
+      });
     });
 });
 
-server.post("/users", (req, res) => {
+server.post("/api/users", (req, res) => {
   //one way to ge data from the client is in the request's body
   //axios.post(url, data) =. the dat ashows up as the bosy on the server
   const userInfo = req.body;
@@ -43,9 +46,24 @@ server.post("/users", (req, res) => {
     })
     .catch(err => {
       //handle error
-      res.json({
+      res.status(500).json({
         error: err,
-        message: "Please provide name and bio for the user."
+        message: "There was an error while saving the user to the database."
+      });
+    });
+});
+
+server.delete("/api/users/:id", (req, res) => {
+  //axios.delete(.../users/${id})
+  const userId = req.params.id; //req.params has the URL parameters
+  db.remove(userId)
+    .then(removed => {
+      res.status(204).end(); //sends back a response to the client without sending any data
+    })
+    .catch(err => {
+      res.status(500).json({
+        error: err,
+        message: "The user could not be removed."
       });
     });
 });
