@@ -34,7 +34,8 @@ server.get("/api/users", (req, res) => {
 });
 
 server.get("/api/users/:id", (req, res) => {
-  const { id } = req.params;
+  //   const { id } = req.params;
+  const id = req.params.id;
   db.findById(id)
     .then(user => {
       if (user) {
@@ -97,6 +98,38 @@ server.delete("/api/users/:id", (req, res) => {
         message: "The user could not be removed."
       });
     });
+});
+
+server.put("/api/users/:id", (req, res) => {
+  const id = req.params.id;
+  const user = req.body;
+
+  if (user.name && user.bio) {
+    db.update(id, user)
+      .then(updated => {
+        if (updated) {
+          db.findById(id).then(user => {
+            res.json(user);
+          });
+        } else {
+          //404 invalid id
+          res.status(404).json({
+            message: "The user with the specified ID does not exist."
+          });
+        }
+      })
+      .catch(err => {
+        // something else went wrong
+        res.status(500).json({
+          error: err,
+          message: "Please provide name and bio for the user."
+        });
+      });
+  } else {
+    res
+      .status(400) //400 name or bio is missing
+      .json({ message: "Please provide name and bio for the user." });
+  }
 });
 
 server.listen(5000, () => {
