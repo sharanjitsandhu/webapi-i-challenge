@@ -16,6 +16,8 @@ server.get("/", (req, res) => {
 });
 
 //GET /users => return a list of users in JSON format
+
+//  Returns an array of all the user objects contained in the database.
 server.get("/api/users", (req, res) => {
   db.find()
     .then(users => {
@@ -33,6 +35,7 @@ server.get("/api/users", (req, res) => {
     });
 });
 
+//  Returns the user object with the specified id.
 server.get("/api/users/:id", (req, res) => {
   //   const { id } = req.params;
   const id = req.params.id;
@@ -53,7 +56,9 @@ server.get("/api/users/:id", (req, res) => {
     });
 });
 
+//  Creates a user using the information sent inside the request body.
 server.post("/api/users", (req, res) => {
+  // axios.post("http://localhost:5000/api/users", newUser)
   //one way to get data from the client is in the request's body
   //axios.post(url, data) => the data shows up as the body on the server
   const userInfo = req.body;
@@ -79,8 +84,9 @@ server.post("/api/users", (req, res) => {
   }
 });
 
+//  Removes the user with the specified id and returns the deleted user.
 server.delete("/api/users/:id", (req, res) => {
-  //axios.delete(.../users/${id})
+  //axios.delete(`http://localhost:5000/api/users/${id}`)
   const userId = req.params.id; //req.params has the URL parameters
   db.remove(userId)
     .then(removed => {
@@ -100,7 +106,10 @@ server.delete("/api/users/:id", (req, res) => {
     });
 });
 
+//  Updates the user with the specified id using data from the request body.
+//  Returns the modified document, NOT the original.
 server.put("/api/users/:id", (req, res) => {
+  //axios.put(`http://localhost:5000/api/users/${updated.id}`, updated)
   const id = req.params.id;
   const user = req.body;
 
@@ -132,6 +141,7 @@ server.put("/api/users/:id", (req, res) => {
   }
 });
 
+//listening
 server.listen(5000, () => {
   console.log("\n*** API is running on port 5000 ***\n");
 });
