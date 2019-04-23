@@ -41,7 +41,8 @@ server.get("/api/users/:id", (req, res) => {
   const id = req.params.id;
   db.findById(id)
     .then(user => {
-      if (user) {
+      // if (user.length > 0) {
+      if (user[0]) {
         res.json(user);
       } else {
         res
@@ -145,3 +146,5 @@ server.put("/api/users/:id", (req, res) => {
 server.listen(5000, () => {
   console.log("\n*** API is running on port 5000 ***\n");
 });
+
+//cmd+K+1 to minimize lines of code
