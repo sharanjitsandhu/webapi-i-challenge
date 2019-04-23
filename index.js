@@ -52,25 +52,6 @@ server.get("/api/users/:id", (req, res) => {
     });
 });
 
-/*server.post("/api/users", (req, res) => {
-  //one way to ge data from the client is in the request's body
-  const userInfo = req.body;
-  console.log("request body: ", userInfo);
-
-  db.insert(userInfo)
-    .then(user => {
-      res.status(201).json(user);
-    })
-    .catch(err => {
-      //handle error
-      res.status(500).json({
-        error: err,
-        message: "There was an error while saving the user to the database."
-      });
-    });
-});
-*/
-
 server.post("/api/users", (req, res) => {
   //one way to get data from the client is in the request's body
   //axios.post(url, data) => the data shows up as the body on the server
@@ -102,7 +83,13 @@ server.delete("/api/users/:id", (req, res) => {
   const userId = req.params.id; //req.params has the URL parameters
   db.remove(userId)
     .then(removed => {
-      res.status(204).end(); //sends back a response to the client without sending any data
+      if (removed) {
+        res.status(204).end(); //sends back a response to the client without sending any data
+      } else {
+        res
+          .status(404)
+          .json({ message: "The user with the specified ID does not exist." });
+      }
     })
     .catch(err => {
       res.status(500).json({
